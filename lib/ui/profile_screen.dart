@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'update_profile_screen.dart'; // Import file update_profile_screen.dart
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -6,9 +7,15 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF1D1D28), // Set background color to black
       appBar: AppBar(
-        title: Text('Profile'),
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 37, 37, 53),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text('Profile', style: TextStyle(color: Colors.white)),
       ),
       body: ListView(
         padding: EdgeInsets.all(16.0),
@@ -83,7 +90,11 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.0),
             ),
             onTap: () {
-              Navigator.pushNamed(context, '/updateProfile');
+              // Navigate to UpdateProfileScreen when Update Profile is tapped
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UpdateProfileScreen()),
+              );
             },
           ),
           SizedBox(height: 16.0),
@@ -100,6 +111,8 @@ class ProfileScreen extends StatelessWidget {
             ),
             onTap: () {
               // Handle Log Out tap
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/login', (route) => false);
             },
           ),
         ],
@@ -108,27 +121,20 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.black,
         items: [
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_home.png',
-                width: 24, height: 24),
-            label: 'Home',
-          ),
+              icon: Icon(Icons.home, color: Color(0xFFA1F7FF)), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_ticket.png',
-                width: 24, height: 24),
-            label: 'Ticket',
-          ),
+              icon: Icon(Icons.movie, color: Color(0xFFA1F7FF)),
+              label: 'Ticket'),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_history.png',
-                width: 24, height: 24),
-            label: 'History',
-          ),
+              icon: Icon(Icons.history, color: Color(0xFFA1F7FF)),
+              label: 'History'),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_users.png',
-                width: 24, height: 24),
-            label: 'Profile',
-          ),
+              icon: Icon(Icons.person, color: Color(0xFFA1F7FF)),
+              label: 'Profile'),
         ],
         currentIndex: 3, // Set the current index to Profile
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         onTap: (index) {
           _onItemTapped(context, index);
         },

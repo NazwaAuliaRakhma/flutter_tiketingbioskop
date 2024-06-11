@@ -38,6 +38,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 _buildButton('Save', Colors.blue, () {
                   // Handle Save button press
                   // Perform save action here
+                  _saveProfile();
                 }),
               ],
             ),
@@ -88,5 +89,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         style: TextStyle(color: Colors.white),
       ),
     );
+  }
+
+  void _saveProfile() {
+    // Perform save action here
+    // For demonstration purposes, let's just print the updated profile info
+    print('Name: ${_nameController.text}');
+    print('Email: ${_emailController.text}');
+    print('Password: ${_passwordController.text}');
   }
 }

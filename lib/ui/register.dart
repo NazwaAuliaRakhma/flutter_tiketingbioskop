@@ -5,6 +5,7 @@ import '../utils/routes.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -12,7 +13,9 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final emailEdc = TextEditingController();
   final passEdc = TextEditingController();
+  final nameEdc = TextEditingController();
   bool passInvisible = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +35,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ));
           }
           if (state is RegisterSuccess) {
-// context.read<AuthCubit>().loggedIn();
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(SnackBar(
@@ -44,102 +46,129 @@ class _RegisterScreenState extends State<RegisterScreen> {
           }
         },
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 30, vertical: 70),
+          color: Color(0xFF1A1A2E),
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 70),
           child: ListView(
             children: [
               Text(
-                "Register",
+                "Registrasi",
                 style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff3D4DE0)),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                "Silahkan masukan e-mail dan password anda",
-                style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              SizedBox(
-                height: 25,
-              ),
-              Text(
-                "e-mail",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              TextFormField(
-                controller: emailEdc,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "password",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              TextFormField(
-                controller: passEdc,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(passInvisible
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        passInvisible =
-                            !passInvisible; // Toggle_isPasswordVisible ketika ikon mata ditekan
-                      });
-                    },
+              SizedBox(height: 40),
+              _buildTextField(nameEdc, "Name", "Input your Name"),
+              SizedBox(height: 20),
+              _buildTextField(emailEdc, "Email", "Input your email"),
+              SizedBox(height: 20),
+              _buildTextField(passEdc, "Password", "Input password",
+                  isPassword: true),
+              SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<RegisterCubit>().register(
+                        email: emailEdc.text,
+                        password: passEdc.text,
+                      );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(
+                  "Register",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.white,
                   ),
                 ),
-                obscureText:
-                    !passInvisible, // Atur obscureText berdasarkan _isPasswordVisible
               ),
-              SizedBox(
-                height: 50,
+              SizedBox(height: 25),
+              Center(
+                child: Text(
+                  "Register With",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    context
-                        .read<RegisterCubit>()
-                        .register(email: emailEdc.text, password: passEdc.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff3D4DE0),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10))),
-                  child: Text(
-                    "Register",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                        color: Colors.white),
-                  )),
-              SizedBox(
-                height: 25,
-              ),
+              SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Sudah punya akun ?"),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/login');
-                      },
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff3D4DE0)),
-                      ))
+                  _buildSocialIcon(
+                      "assets/images/google.png"), // Adjust the paths to your asset images
+                  SizedBox(width: 20),
+                  _buildSocialIcon("assets/images/telp.png"),
                 ],
-              )
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller, String label, String hint,
+      {bool isPassword = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 10),
+        TextFormField(
+          controller: controller,
+          obscureText: isPassword ? !passInvisible : false,
+          style: TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Color(0xFF303030),
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.white54),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      passInvisible ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        passInvisible = !passInvisible;
+                      });
+                    },
+                  )
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialIcon(String assetPath) {
+    return InkWell(
+      onTap: () {
+        // Add your onTap logic here
+      },
+      child: Image.asset(
+        assetPath,
+        width: 50,
+        height: 50,
       ),
     );
   }

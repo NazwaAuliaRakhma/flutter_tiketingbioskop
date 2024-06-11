@@ -3,10 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nazwa_tiketing/bloc/login/login_cubit.dart';
+import 'package:nazwa_tiketing/ui/action_screen.dart';
+import 'package:nazwa_tiketing/ui/family_screen.dart';
 import 'package:nazwa_tiketing/ui/home_screen.dart';
+import 'package:nazwa_tiketing/ui/horror_screen.dart';
 import 'package:nazwa_tiketing/ui/login.dart';
-import 'package:nazwa_tiketing/ui/history_screen.dart'; // Add this import
-import 'package:nazwa_tiketing/ui/profile_screen.dart'; // Add this import
+import 'package:nazwa_tiketing/ui/history_screen.dart';
+import 'package:nazwa_tiketing/ui/profile_screen.dart';
+import 'package:nazwa_tiketing/ui/romance_screen.dart';
+import 'package:nazwa_tiketing/ui/select_seat.dart';
 import 'package:nazwa_tiketing/utils/routes.dart';
 import 'bloc/register/register_cubit.dart';
 import 'firebase_options.dart';
@@ -37,8 +42,13 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const MainScreen(),
-          '/history': (context) => HistoryScreen(), // Add this route
-          '/profile': (context) => ProfileScreen(), // Add this route
+          '/history': (context) => HistoryScreen(),
+          '/profile': (context) => ProfileScreen(),
+          '/romance': (context) => RomanceScreen(),
+          '/horror': (context) => HorrorScreen(),
+          '/action': (context) => ActionScreen(),
+          '/family': (context) => FamilyScreen(), 
+          '/select': (context) => ReservationApp(), 
         },
       ),
     );
@@ -62,25 +72,9 @@ class MainScreen extends StatelessWidget {
             child: Text('Something went wrong'),
           );
         } else {
-          return const LoginScreen();
+          return LoginScreen();
         }
       },
     );
-  }
-
-  void _onItemTapped(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        break;
-      case 1:
-        // Implement navigation to TicketScreen
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/history');
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/profile');
-        break;
-    }
   }
 }

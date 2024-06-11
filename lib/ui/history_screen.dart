@@ -7,9 +7,15 @@ class HistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('History'),
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 37, 37, 53),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text('History', style: TextStyle(color: Colors.white)),
       ),
+      backgroundColor: Color(0xFF1D1D28),
       body: ListView(
         padding: EdgeInsets.all(16.0),
         children: [
@@ -28,30 +34,23 @@ class HistoryScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFF1A1A2E),
         items: [
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_home.png',
-                width: 24, height: 24),
-            label: 'Home',
-          ),
+              icon: Icon(Icons.home, color: Color(0xFFA1F7FF)), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_ticket.png',
-                width: 24, height: 24),
-            label: 'Ticket',
-          ),
+              icon: Icon(Icons.movie, color: Color(0xFFA1F7FF)),
+              label: 'Ticket'),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_history.png',
-                width: 24, height: 24),
-            label: 'History',
-          ),
+              icon: Icon(Icons.history, color: Color(0xFFA1F7FF)),
+              label: 'History'),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/img_users.png',
-                width: 24, height: 24),
-            label: 'Profile',
-          ),
+              icon: Icon(Icons.person, color: Color(0xFFA1F7FF)),
+              label: 'Profile'),
         ],
         currentIndex: 2, // Set the current index to History
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         onTap: (index) {
           _onItemTapped(context, index);
         },
