@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'edit_movie.dart';
 
 class MovieScreen extends StatelessWidget {
@@ -27,62 +28,46 @@ class MovieScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            movieCard(
-              context,
-              'KKN Di Desa Penari',
-              'STUDIO 1',
-              'Horror',
-              '1j 30m',
-              '44',
-              '40.000',
-              '13:30',
-              '15:00',
-              '16:30',
-              '18:00',
-              'KKN Desa Penari merupakan sebuah film horor yang diangkat dari kisah nyata enam mahasiswa.',
-              '28.06.2024',
-              'assets/images/img_rectangle_67.png',
-            ),
-            movieCard(
-              context,
-              'THE DOLL 3',
-              'STUDIO 2',
-              'Horror',
-              '1j 40m',
-              '50',
-              '45.000',
-              '15:30',
-              '18:00',
-              '19:30',
-              '21:00',
-              'The Doll 3 adalah film horor yang menceritakan kisah boneka berhantu.',
-              '29.06.2024',
-              'assets/images/img_rectangle_70.png',
-            ),
-            movieCard(
-              context,
-              'TELUH',
-              'STUDIO 3',
-              'Horror',
-              '1j 35m',
-              '48',
-              '42.000',
-              '14:00',
-              '15:30',
-              '17:00',
-              '18:30',
-              'Teluh adalah film yang mengisahkan tentang kutukan yang menyerang sebuah keluarga.',
-              '30.06.2024',
-              'assets/images/img_rectangle_73.png',
-            ),
-          ],
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('movies').snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            var movies = snapshot.data!.docs;
+
+            return ListView.builder(
+              itemCount: movies.length,
+              itemBuilder: (context, index) {
+                var movie = movies[index];
+
+                return movieCard(
+                  context,
+                  movie['movie_name'],
+                  'STUDIO ${movie['studio']}',
+                  movie['genre'],
+                  '1j 30m', // Durasi bisa diperbarui dengan data sebenarnya jika tersedia
+                  '44', // Jumlah tiket bisa diperbarui dengan data sebenarnya jika tersedia
+                  movie['price'],
+                  '13:30', // Waktu tayang bisa diperbarui dengan data sebenarnya jika tersedia
+                  '15:00',
+                  '16:30',
+                  '18:00',
+                  movie['movie_description'],
+                  movie['release_date'] ??
+                      'Tanggal tidak tersedia', // Tanggal rilis
+                  movie['cover_movie'],
+                  movie.id, // id film untuk penghapusan
+                );
+              },
+            );
+          },
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xFF1A1A1A),
-        selectedItemColor: Colors.orange,
+        selectedItemColor: Color(0xFFA1F7FF),
         unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(
@@ -104,20 +89,22 @@ class MovieScreen extends StatelessWidget {
   }
 
   Widget movieCard(
-      BuildContext context,
-      String title,
-      String studio,
-      String genre,
-      String duration,
-      String tickets,
-      String price,
-      String time1,
-      String time2,
-      String time3,
-      String time4,
-      String description,
-      String date,
-      String imagePath) {
+    BuildContext context,
+    String title,
+    String studio,
+    String genre,
+    String duration,
+    String tickets,
+    String price,
+    String time1,
+    String time2,
+    String time3,
+    String time4,
+    String description,
+    String date,
+    String imagePath,
+    String movieId, // id film untuk penghapusan
+  ) {
     return Card(
       color: Color(0xFF2C2C2C),
       shape: RoundedRectangleBorder(
@@ -130,7 +117,7 @@ class MovieScreen extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset(
+                Image.network(
                   imagePath,
                   width: 100,
                   height: 150,
@@ -190,6 +177,12 @@ class MovieScreen extends StatelessWidget {
                         ),
                       ),
                     );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.white),
+                  onPressed: () {
+                    _showDeleteConfirmationDialog(context, movieId);
                   },
                 ),
               ],
@@ -253,6 +246,54 @@ class MovieScreen extends StatelessWidget {
       child: Text(time),
     );
   }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String movieId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Konfirmasi"),
+          content: Text("Anda yakin ingin menghapus film ini?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: Text("Batal"),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteMovie(
+                    context, movieId); // Hapus film jika konfirmasi diizinkan
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: Text("Hapus"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteMovie(BuildContext context, String movieId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('movies')
+          .doc(movieId)
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Film berhasil dihapus"),
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Gagal menghapus film: $e"),
+      ));
+    }
+  }
 }
 
-                       
+void main() {
+  runApp(MaterialApp(
+    home: MovieScreen(),
+  ));
+}

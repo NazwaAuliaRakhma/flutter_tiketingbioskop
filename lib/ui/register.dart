@@ -17,6 +17,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool passInvisible = false;
 
   @override
+  void dispose() {
+    emailEdc.dispose();
+    nameEdc.dispose();
+    passEdc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<RegisterCubit, RegisterState>(
@@ -71,6 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   context.read<RegisterCubit>().register(
                         email: emailEdc.text,
                         password: passEdc.text,
+                        username: nameEdc.text,
                       );
                 },
                 style: ElevatedButton.styleFrom(

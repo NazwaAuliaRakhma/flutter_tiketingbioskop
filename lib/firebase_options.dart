@@ -42,48 +42,51 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCHQQJfrhG0E5VrVaR_Sw6npzTfGBU8gI4',
-    appId: '1:1027479018342:web:6f3c3c22eb6325b94246a7',
-    messagingSenderId: '1027479018342',
-    projectId: 'nazwa-tubesppb',
-    authDomain: 'nazwa-tubesppb.firebaseapp.com',
-    storageBucket: 'nazwa-tubesppb.appspot.com',
-    measurementId: 'G-79K96RLGFT',
+    apiKey: 'AIzaSyBpa-ew7UedfP4x80Ee3yt0g4f7sMsFRi8',
+    appId: '1:497104196815:web:50bdcbacbdabf1b48493ba',
+    messagingSenderId: '497104196815',
+    projectId: 'tubesppb-c0236',
+    authDomain: 'tubesppb-c0236.firebaseapp.com',
+    storageBucket: 'tubesppb-c0236.appspot.com',
+    measurementId: 'G-E2R1L1GV0M',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC4ln6v51ptRtczce-PWVko2BSxMKQRKU4',
-    appId: '1:1027479018342:android:d8188e5fe4bb52444246a7',
-    messagingSenderId: '1027479018342',
-    projectId: 'nazwa-tubesppb',
-    storageBucket: 'nazwa-tubesppb.appspot.com',
+    apiKey: 'AIzaSyDOIliuGCZQrArieGgroT-ww6UX1VkN4q8',
+    appId: '1:497104196815:android:086f9b7826d0035c8493ba',
+    messagingSenderId: '497104196815',
+    projectId: 'tubesppb-c0236',
+    storageBucket: 'tubesppb-c0236.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA_kgNRukhhmEl-SbzeVkBC8KXcTnHh1UY',
-    appId: '1:1027479018342:ios:3fbb731d3ff9c4c14246a7',
-    messagingSenderId: '1027479018342',
-    projectId: 'nazwa-tubesppb',
-    storageBucket: 'nazwa-tubesppb.appspot.com',
+    apiKey: 'AIzaSyC2Zlv9XbsqKiqiRYBj9kMA3tX6U2dcsls',
+    appId: '1:497104196815:ios:919d1276acc2a5958493ba',
+    messagingSenderId: '497104196815',
+    projectId: 'tubesppb-c0236',
+    storageBucket: 'tubesppb-c0236.appspot.com',
+    iosClientId: '497104196815-82gbdur5h1bkgfhdrl11hsvt4sdr97u8.apps.googleusercontent.com',
     iosBundleId: 'com.example.nazwaTiketing',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA_kgNRukhhmEl-SbzeVkBC8KXcTnHh1UY',
-    appId: '1:1027479018342:ios:3fbb731d3ff9c4c14246a7',
-    messagingSenderId: '1027479018342',
-    projectId: 'nazwa-tubesppb',
-    storageBucket: 'nazwa-tubesppb.appspot.com',
+    apiKey: 'AIzaSyC2Zlv9XbsqKiqiRYBj9kMA3tX6U2dcsls',
+    appId: '1:497104196815:ios:919d1276acc2a5958493ba',
+    messagingSenderId: '497104196815',
+    projectId: 'tubesppb-c0236',
+    storageBucket: 'tubesppb-c0236.appspot.com',
+    iosClientId: '497104196815-82gbdur5h1bkgfhdrl11hsvt4sdr97u8.apps.googleusercontent.com',
     iosBundleId: 'com.example.nazwaTiketing',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCHQQJfrhG0E5VrVaR_Sw6npzTfGBU8gI4',
-    appId: '1:1027479018342:web:5ae6d7cb78573d904246a7',
-    messagingSenderId: '1027479018342',
-    projectId: 'nazwa-tubesppb',
-    authDomain: 'nazwa-tubesppb.firebaseapp.com',
-    storageBucket: 'nazwa-tubesppb.appspot.com',
-    measurementId: 'G-DSV3XP3H5R',
+    apiKey: 'AIzaSyBpa-ew7UedfP4x80Ee3yt0g4f7sMsFRi8',
+    appId: '1:497104196815:web:8ab72a0fa94ef9478493ba',
+    messagingSenderId: '497104196815',
+    projectId: 'tubesppb-c0236',
+    authDomain: 'tubesppb-c0236.firebaseapp.com',
+    storageBucket: 'tubesppb-c0236.appspot.com',
+    measurementId: 'G-8T88PKQVHE',
   );
+
 }

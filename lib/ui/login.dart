@@ -5,7 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nazwa_tiketing/bloc/login/login_cubit.dart';
 import 'package:nazwa_tiketing/ui/home_screen.dart';
 import 'package:nazwa_tiketing/ui/phone_auth_screen.dart';
-import '../utils/routes.dart';
+import 'package:nazwa_tiketing/screens/login_admin.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -183,7 +183,11 @@ class LoginScreen extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            // Handle administrator button press
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => LoginPage()), // Update this line
+            );
           },
           child: Text(
             'Administrator',

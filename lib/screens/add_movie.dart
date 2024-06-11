@@ -1,29 +1,71 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class AddMovieScreen extends StatefulWidget {
+class AddMoviePage extends StatefulWidget {
   @override
-  _AddMovieScreenState createState() => _AddMovieScreenState();
+  _AddMoviePageState createState() => _AddMoviePageState();
 }
 
-class _AddMovieScreenState extends State<AddMovieScreen> {
-  int ticketCount = 0;
+class _AddMoviePageState extends State<AddMoviePage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _ticketController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _movieNameController = TextEditingController();
+  final TextEditingController _movieDescriptionController =
+      TextEditingController();
+  final TextEditingController _synopsisController = TextEditingController();
+  String _selectedStudio = '1';
+  String _selectedGenre = 'Horor';
+  String _selectedTime = '13:30';
+  final _timeSlots = ['13:30', '14:40', '15:30', '16:30'];
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    _ticketController.dispose();
+    _priceController.dispose();
+    _movieNameController.dispose();
+    _movieDescriptionController.dispose();
+    _synopsisController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveMovie() async {
+    try {
+      await FirebaseFirestore.instance.collection('movies').add({
+        'date': _dateController.text,
+        'price': _priceController.text,
+        'genre': _selectedGenre,
+        'studio': _selectedStudio,
+        'movie_name': _movieNameController.text,
+        'movie_description': _movieDescriptionController.text,
+        'cover_movie':
+            'KKN.png', // Update this based on your image upload logic
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Movie saved successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save movie: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1A1A1A),
+      backgroundColor: Color(0xFF1D1D28),
       appBar: AppBar(
-        backgroundColor: Color(0xFF1A1A1A),
+        backgroundColor: Color.fromARGB(255, 37, 37, 53),
         elevation: 0,
-        title: Text(
-          'ADD MOVIE',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        centerTitle: true,
+        title: Text('Add Movie', style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -31,37 +73,69 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              buildDateField(),
-              SizedBox(height: 16),
-              buildDropdownField('Studio'),
-              SizedBox(height: 16),
-              buildNumberField('Ticket', () {
-                setState(() {
-                  ticketCount++;
-                });
-              }, () {
-                setState(() {
-                  if (ticketCount > 0) ticketCount--;
-                });
-              }),
-              SizedBox(height: 16),
-              buildTextField('Price'),
-              SizedBox(height: 16),
-              buildImageUploadField(),
-              SizedBox(height: 16),
-              buildDropdownField('Genre'),
-              SizedBox(height: 16),
-              buildTextField('Movie Name'),
-              SizedBox(height: 16),
-              buildTextField('Movie Description'),
-              SizedBox(height: 16),
-              buildTextField('Time'),
-              SizedBox(height: 16),
-              buildTextField('Duration'),
-              SizedBox(height: 16),
-              buildTextField('Synopsis Film'),
-              SizedBox(height: 16),
-              buildButtonBar(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildDateField(),
+                        SizedBox(height: 16.0),
+                        _buildStudioDropdown(),
+                        SizedBox(height: 16.0),
+                        _buildTicketField(),
+                        SizedBox(height: 16.0),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildPriceField(),
+                        SizedBox(height: 16.0),
+                        _buildImageUploadField(),
+                        SizedBox(height: 16.0),
+                        _buildGenreDropdown(),
+                        SizedBox(height: 16.0),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              _buildTextField(_movieNameController, 'Movie Name'),
+              SizedBox(height: 16.0),
+              _buildTextField(_movieDescriptionController, 'Movie Description'),
+              SizedBox(height: 16.0),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTimeField(),
+                      SizedBox(height: 16.0),
+                    ],
+                  )),
+                  SizedBox(width: 16),
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildDurationField(),
+                      SizedBox(height: 16.0),
+                    ],
+                  ))
+                ],
+              ),
+              SizedBox(height: 16.0),
+              _buildTextField(_synopsisController, 'Synopsis Film'),
+              SizedBox(height: 16.0),
+              _buildActionButtons(),
             ],
           ),
         ),
@@ -69,156 +143,215 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
     );
   }
 
-  Widget buildDateField() {
+  Widget _buildDateField() {
     return TextFormField(
-      decoration: InputDecoration(
-        hintText: 'Date',
-        suffixIcon: Icon(Icons.calendar_today, color: Colors.grey),
-        filled: true,
-        fillColor: Color(0xFF2C2C2C),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        hintStyle: TextStyle(color: Colors.grey),
-      ),
+      controller: _dateController,
       style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: 'Date',
+        labelStyle: TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
+        suffixIcon: IconButton(
+          icon: Icon(Icons.calendar_today, color: Colors.white),
+          onPressed: _selectDate,
+        ),
+      ),
+      readOnly: true,
     );
   }
 
-  Widget buildDropdownField(String hint) {
-    return DropdownButtonFormField(
+  Future<void> _selectDate() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _dateController.text = DateFormat('dd.MM.yyyy').format(selectedDate);
+      });
+    }
+  }
+
+  Widget _buildStudioDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedStudio,
+      onChanged: (newValue) {
+        setState(() {
+          _selectedStudio = newValue!;
+        });
+      },
+      items: ['1', '2', '3', '4'].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value, style: TextStyle(color: Colors.white)),
+        );
+      }).toList(),
       decoration: InputDecoration(
-        hintText: hint,
+        labelText: 'Studio',
+        labelStyle: TextStyle(color: Colors.white),
         filled: true,
-        fillColor: Color(0xFF2C2C2C),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        hintStyle: TextStyle(color: Colors.grey),
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
       ),
-      style: TextStyle(color: Colors.white),
-      items: ['Option 1', 'Option 2', 'Option 3']
-          .map((option) => DropdownMenuItem(
-                value: option,
-                child: Text(option),
-              ))
-          .toList(),
-      onChanged: (value) {},
-      iconEnabledColor: Colors.grey,
-      dropdownColor: Color(0xFF2C2C2C),
+      dropdownColor: Colors.black,
     );
   }
 
-  Widget buildNumberField(String hint, Function increment, Function decrement) {
+  Widget _buildTicketField() {
+    return TextFormField(
+      controller: _ticketController,
+      keyboardType: TextInputType.number,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: 'Ticket',
+        labelStyle: TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildPriceField() {
+    return TextFormField(
+      controller: _priceController,
+      keyboardType: TextInputType.number,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: 'Price',
+        labelStyle: TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildImageUploadField() {
+    return GestureDetector(
+      onTap: () {
+        // Implement image upload functionality
+      },
+      child: Container(
+        color: Colors.black26,
+        height: 50,
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add_photo_alternate, color: Colors.white),
+              SizedBox(width: 8.0),
+              Text('Upload Image', style: TextStyle(color: Colors.white)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGenreDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedGenre,
+      onChanged: (newValue) {
+        setState(() {
+          _selectedGenre = newValue!;
+        });
+      },
+      items: ['Horor', 'Action', 'Comedy', 'Drama']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value, style: TextStyle(color: Colors.white)),
+        );
+      }).toList(),
+      decoration: InputDecoration(
+        labelText: 'Genre',
+        labelStyle: TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
+      ),
+      dropdownColor: Colors.black,
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return TextFormField(
+      controller: controller,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildTimeField() {
+    return DropdownButtonFormField<String>(
+      value: _selectedTime,
+      onChanged: (newValue) {
+        setState(() {
+          _selectedTime = newValue!;
+        });
+      },
+      items: _timeSlots.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value, style: TextStyle(color: Colors.white)),
+        );
+      }).toList(),
+      decoration: InputDecoration(
+        labelText: 'Time',
+        labelStyle: TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
+      ),
+      dropdownColor: Colors.black,
+    );
+  }
+
+  Widget _buildDurationField() {
+    return TextFormField(
+      initialValue: '1j 30m',
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: 'Duration',
+        labelStyle: TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black26,
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Expanded(
-          child: TextFormField(
-            readOnly: true,
-            initialValue: ticketCount.toString(),
-            decoration: InputDecoration(
-              hintText: hint,
-              filled: true,
-              fillColor: Color(0xFF2C2C2C),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              hintStyle: TextStyle(color: Colors.grey),
-            ),
-            style: TextStyle(color: Colors.white),
-          ),
+        ElevatedButton(
+          onPressed: () {
+            // Implement delete functionality
+          },
+          style: ElevatedButton.styleFrom(primary: Color(0xFFA1F7FF)),
+          child: Text('Reset'),
         ),
-        IconButton(
-          icon: Icon(Icons.remove, color: Colors.grey),
-          onPressed: () => decrement(),
-        ),
-        IconButton(
-          icon: Icon(Icons.add, color: Colors.grey),
-          onPressed: () => increment(),
-        ),
-      ],
-    );
-  }
-
-  Widget buildTextField(String hint) {
-    return TextFormField(
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Color(0xFF2C2C2C),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        hintStyle: TextStyle(color: Colors.grey),
-      ),
-      style: TextStyle(color: Colors.white),
-    );
-  }
-
-  Widget buildImageUploadField() {
-    return TextFormField(
-      decoration: InputDecoration(
-        hintText: 'Upload',
-        suffixIcon: Icon(Icons.add, color: Colors.grey),
-        filled: true,
-        fillColor: Color(0xFF2C2C2C),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        hintStyle: TextStyle(color: Colors.grey),
-      ),
-      style: TextStyle(color: Colors.white),
-    );
-  }
-
-  Widget buildButtonBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF1A1A1A),
-              padding: EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              'Delete',
-              style: TextStyle(color: Colors.red, fontSize: 16),
-            ),
-          ),
-        ),
-        SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Save data to the database or perform other actions
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.lightBlue,
-              padding: EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              'Save',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
+        ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _saveMovie();
+            }
+          },
+          style: ElevatedButton.styleFrom(primary: Color(0xFFA1F7FF)),
+          child: Text('Save'),
         ),
       ],
     );

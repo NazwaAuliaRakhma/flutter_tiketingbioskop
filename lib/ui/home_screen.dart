@@ -1,9 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nazwa_tiketing/ui/romance_screen.dart';
 import 'package:nazwa_tiketing/ui/horror_screen.dart';
 import 'package:nazwa_tiketing/ui/action_screen.dart';
 import 'package:nazwa_tiketing/ui/family_screen.dart';
+import 'package:nazwa_tiketing/ui/tiket_screen.dart';
 import 'movie_detail_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,6 +20,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  String _username = '';
+
+  Future<void> _getUsername() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      if (doc.exists) {
+        setState(() {
+          _username = doc['username'];
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getUsername(); // Panggil _getUsername saat initState
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +53,14 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: CircleAvatar(
-            backgroundImage: NetworkImage('assets/images/img_2.png'),
+            backgroundImage: NetworkImage('assets/images/avatar.png'),
           ),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Hi!', style: TextStyle(fontSize: 18, color: Colors.white)),
-            Text('Nazwa Aulia Rakhma',
+            Text('$_username',
                 style: TextStyle(fontSize: 22, color: Colors.white)),
           ],
         ),
@@ -91,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromARGB(255, 26, 26, 63),
+        backgroundColor: Color.fromRGBO(26, 26, 63, 1.0),
         currentIndex: _currentIndex,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
@@ -99,7 +127,12 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             _currentIndex = index;
           });
-          if (index == 2) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TicketScreen()),
+            );
+          } else if (index == 2) {
             Navigator.pushNamed(context, '/history');
           } else if (index == 3) {
             Navigator.pushNamed(context, '/profile');
@@ -182,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
         {
           'title': 'Keluarga Cemara 2',
           'image': 'assets/images/img_rectangle_90.png',
-          'genre': 'Drama',
+          'genre': 'Family',
           'duration': '2h 1m',
           'rating': '7.8',
           'synopsis':

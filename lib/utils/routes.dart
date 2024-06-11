@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nazwa_tiketing/screens/add_movie.dart';
 import 'package:nazwa_tiketing/ui/home_screen.dart';
 import 'package:nazwa_tiketing/ui/login.dart';
 import 'package:nazwa_tiketing/ui/register.dart';
@@ -19,6 +20,12 @@ Route? generateRoute(RouteSettings settings) {
     case rHome:
       _route = _pageRoute(body: HomeScreen(), settings: settings);
       break;
+    case rAdd:
+      _route = _pageRoute(body: AddMoviePage(), settings: settings);
+      break;
+    case rEdit:
+      _route = _pageRoute(body: AddMoviePage(), settings: settings);
+      break;
   }
   return _route;
 }
@@ -27,3 +34,5 @@ final NAV_KEY = GlobalKey<NavigatorState>();
 const String rLogin = '/login';
 const String rRegister = '/register';
 const String rHome = '/home';
+const String rAdd = '/add_movie';
+const String rEdit = '/edit';

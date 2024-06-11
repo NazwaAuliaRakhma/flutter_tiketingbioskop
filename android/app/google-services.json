@@ -1,45 +1,37 @@
 {
   "project_info": {
-    "project_number": "1027479018342",
-    "project_id": "nazwa-tubesppb",
-    "storage_bucket": "nazwa-tubesppb.appspot.com"
+    "project_number": "497104196815",
+    "project_id": "tubesppb-c0236",
+    "storage_bucket": "tubesppb-c0236.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1027479018342:android:d8188e5fe4bb52444246a7",
+        "mobilesdk_app_id": "1:497104196815:android:086f9b7826d0035c8493ba",
         "android_client_info": {
           "package_name": "com.example.nazwa_tiketing"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1027479018342-nck0pnj28f1sorn5ktpti1siiovt8u15.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.nazwa_tiketing",
-            "certificate_hash": "1d55fb6ade4eae8e10bc0be3d616238423efa262"
-          }
-        },
-        {
-          "client_id": "1027479018342-ode1frni6tn87v5kg250tvk1v9s7451j.apps.googleusercontent.com",
+          "client_id": "497104196815-crhpce7jibasm3etfuojdgmtprcfms6l.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC4ln6v51ptRtczce-PWVko2BSxMKQRKU4"
+          "current_key": "AIzaSyDOIliuGCZQrArieGgroT-ww6UX1VkN4q8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1027479018342-emj9udja4sinha2l14o1r9gcn4mhq81j.apps.googleusercontent.com",
+              "client_id": "497104196815-crhpce7jibasm3etfuojdgmtprcfms6l.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "1027479018342-83qreqv6cuk4u5ovo01dncmg6rt0uvb4.apps.googleusercontent.com",
+              "client_id": "497104196815-82gbdur5h1bkgfhdrl11hsvt4sdr97u8.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.example.nazwaTiketing"
