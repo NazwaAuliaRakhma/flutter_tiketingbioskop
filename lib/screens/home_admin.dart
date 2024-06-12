@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'edit_movie.dart';
+import 'login_admin.dart';
+import 'profile_admin.dart';
 
 class MovieScreen extends StatelessWidget {
   @override
@@ -9,6 +10,16 @@ class MovieScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color(0xFF1A1A1A),
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => LoginPage()), // Navigate to LoginPage
+            );
+          },
+        ),
         title: Text(
           'MOVIE',
           style: TextStyle(
@@ -81,7 +92,12 @@ class MovieScreen extends StatelessWidget {
         ],
         onTap: (index) {
           if (index == 1) {
-            Navigator.pushNamed(context, '/user_data');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      UserDataScreen()), // Navigate to UserDataScreen
+            );
           }
         },
       ),
@@ -153,31 +169,6 @@ class MovieScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.white),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditMovieScreen(
-                          title: title,
-                          studio: studio,
-                          genre: genre,
-                          duration: duration,
-                          tickets: tickets,
-                          price: price,
-                          time1: time1,
-                          time2: time2,
-                          time3: time3,
-                          time4: time4,
-                          description: description,
-                          date: date,
-                          imagePath: imagePath,
-                        ),
-                      ),
-                    );
-                  },
                 ),
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.white),
@@ -290,10 +281,4 @@ class MovieScreen extends StatelessWidget {
       ));
     }
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: MovieScreen(),
-  ));
 }

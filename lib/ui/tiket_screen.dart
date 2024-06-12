@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nazwa_tiketing/ui/home_screen.dart';
 
-void main() {
-  runApp(TicketApp());
-}
-
 class TicketApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

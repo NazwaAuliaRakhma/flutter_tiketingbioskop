@@ -1,25 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nazwa_tiketing/screens/home_admin.dart';
+import 'package:nazwa_tiketing/ui/login.dart';
 
 class UserDataScreen extends StatelessWidget {
-  final List<User> users = [
-    User(
-        name: 'Nazwa Aulia Rakhma',
-        email: 'nazwa@gmail.com',
-        username: 'nazwa21102015'),
-    User(
-        name: 'Lala Hikmatul Maula',
-        email: 'lala@gmail.com',
-        username: 'lala21102200'),
-    User(
-        name: 'Abdul Jabbar Robbani',
-        email: 'abdul@gmail.com',
-        username: 'abdul21102310'),
-    User(
-        name: 'Fifi Alfiaturrohmah',
-        email: 'fifi@gmail.com',
-        username: 'fifi21102097'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,20 +24,48 @@ class UserDataScreen extends StatelessWidget {
             Navigator.pop(context); // Navigate back to the previous screen
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        LoginScreen()), // Navigate to LoginPage
+              );
+            },
+          ),
+        ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: users.length,
-        itemBuilder: (context, index) {
-          return userCard(users[index]);
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('admin').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          var users = snapshot.data!.docs.map((doc) {
+            return User(
+              name: doc['username'],
+              email: doc['email'],
+              username: doc['role'],
+            );
+          }).toList();
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              return userCard(users[index]);
+            },
+          );
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xFF1A1A1A),
-        selectedItemColor: Colors.lightBlueAccent,
-        unselectedItemColor: Colors.grey,
-        currentIndex:
-            1, // Set the index of the selected item (0: Movie, 1: User)
+        selectedItemColor: Colors.grey,
+        unselectedItemColor: Color(0xFFA1F7FF),
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.movie),
@@ -61,12 +73,17 @@ class UserDataScreen extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
-            label: 'User',
+            label: 'Profile',
           ),
         ],
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushNamed(context, '/movie'); // Navigate to MovieScreen
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MovieScreen()), // Navigate to MovieScreen
+            );
           }
         },
       ),
@@ -127,4 +144,16 @@ class User {
   final String username;
 
   User({required this.name, required this.email, required this.username});
+}
+
+void main() {
+  runApp(MaterialApp(
+    title: 'Navigation Example',
+    initialRoute: '/userdata',
+    routes: {
+      '/userdata': (context) => UserDataScreen(),
+      '/moviescreen': (context) => MovieScreen(),
+      '/login': (context) => LoginScreen(),
+    },
+  ));
 }

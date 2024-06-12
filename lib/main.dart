@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: generateRoute,
         initialRoute: '/',
         routes: {
-          '/': (context) => LoginScreen(),
+          '/': (context) => MainScreen(),
           '/history': (context) => HistoryScreen(),
           '/profile': (context) => ProfileScreen(),
           '/romance': (context) => RomanceScreen(),

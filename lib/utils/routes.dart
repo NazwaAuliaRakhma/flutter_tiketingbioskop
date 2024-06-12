@@ -23,9 +23,6 @@ Route? generateRoute(RouteSettings settings) {
     case rAdd:
       _route = _pageRoute(body: AddMoviePage(), settings: settings);
       break;
-    case rEdit:
-      _route = _pageRoute(body: AddMoviePage(), settings: settings);
-      break;
   }
   return _route;
 }
@@ -35,4 +32,3 @@ const String rLogin = '/login';
 const String rRegister = '/register';
 const String rHome = '/home';
 const String rAdd = '/add_movie';
-const String rEdit = '/edit';

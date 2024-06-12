@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   @override
@@ -6,9 +8,34 @@ class UpdateProfileScreen extends StatefulWidget {
 }
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
-  final _nameController = TextEditingController(text: 'Nazwa Aulia Rakhma');
-  final _emailController = TextEditingController(text: 'nazwa123@gmail.com');
-  final _passwordController = TextEditingController(text: 'nazwa21102015');
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  User? user = FirebaseAuth.instance.currentUser;
+  DocumentSnapshot? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
+  Future<void> _getUserData() async {
+    if (user != null) {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
+      setState(() {
+        userData = doc;
+        _nameController.text = doc['username'];
+        _emailController.text = doc['email'];
+        _passwordController.text =
+            ''; // Don't fetch the password for security reasons
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,30 +47,32 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       body: Container(
         color: Colors.black,
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            _buildTextField(_nameController, 'Name'),
-            SizedBox(height: 16.0),
-            _buildTextField(_emailController, 'Email'),
-            SizedBox(height: 16.0),
-            _buildTextField(_passwordController, 'Password', obscureText: true),
-            SizedBox(height: 24.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                _buildButton('Cancel', Colors.blue, () {
-                  // Handle Cancel button press
-                  Navigator.pop(context);
-                }),
-                _buildButton('Save', Colors.blue, () {
-                  // Handle Save button press
-                  // Perform save action here
-                  _saveProfile();
-                }),
-              ],
-            ),
-          ],
-        ),
+        child: userData == null
+            ? Center(child: CircularProgressIndicator())
+            : Column(
+                children: <Widget>[
+                  _buildTextField(_nameController, 'Name'),
+                  SizedBox(height: 16.0),
+                  _buildTextField(_emailController, 'Email'),
+                  SizedBox(height: 16.0),
+                  _buildTextField(_passwordController, 'Password',
+                      obscureText: true),
+                  SizedBox(height: 24.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      _buildButton('Cancel', Colors.blue, () {
+                        // Handle Cancel button press
+                        Navigator.pop(context);
+                      }),
+                      _buildButton('Save', Colors.blue, () {
+                        // Handle Save button press
+                        _saveProfile();
+                      }),
+                    ],
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -91,11 +120,26 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     );
   }
 
-  void _saveProfile() {
-    // Perform save action here
-    // For demonstration purposes, let's just print the updated profile info
-    print('Name: ${_nameController.text}');
-    print('Email: ${_emailController.text}');
-    print('Password: ${_passwordController.text}');
+  void _saveProfile() async {
+    try {
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .update({
+          'username': _nameController.text,
+          'email': _emailController.text,
+        });
+
+        if (_passwordController.text.isNotEmpty) {
+          await user!.updatePassword(_passwordController.text);
+        }
+
+        print('Profile updated in Firestore');
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print('Failed to update profile: $e');
+    }
   }
 }

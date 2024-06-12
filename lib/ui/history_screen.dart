@@ -6,6 +6,7 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF1D1D28),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 37, 37, 53),
         elevation: 0,
@@ -15,7 +16,6 @@ class HistoryScreen extends StatelessWidget {
         ),
         title: Text('History', style: TextStyle(color: Colors.white)),
       ),
-      backgroundColor: Color(0xFF1D1D28),
       body: ListView(
         padding: EdgeInsets.all(16.0),
         children: [
@@ -64,7 +64,7 @@ class HistoryScreen extends StatelessWidget {
         Navigator.pushNamed(context, '/home');
         break;
       case 1:
-        // Implement navigation to TicketScreen
+        Navigator.pushNamed(context, '/tiket');
         break;
       case 2:
         // Already on HistoryScreen

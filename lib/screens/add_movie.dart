@@ -1,6 +1,13 @@
+import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'home_admin.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path/path.dart' as path;
 
 class AddMoviePage extends StatefulWidget {
   @override
@@ -20,6 +27,7 @@ class _AddMoviePageState extends State<AddMoviePage> {
   String _selectedGenre = 'Horor';
   String _selectedTime = '13:30';
   final _timeSlots = ['13:30', '14:40', '15:30', '16:30'];
+  XFile? _image;
 
   @override
   void dispose() {
@@ -32,18 +40,64 @@ class _AddMoviePageState extends State<AddMoviePage> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = pickedFile;
+      });
+    }
+  }
+
+  String generateRandomId() {
+    var random = Random();
+    int randomNumber = 10000 + random.nextInt(90000);
+    return randomNumber.toString();
+  }
+
+  Future<String> uploadImageToFirebase(XFile imageFile) async {
+    final fileName = path.basename(imageFile.path);
+    firebase_storage.Reference firebaseStorageRef = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child('assets/images/$fileName');
+    await firebaseStorageRef.putFile(File(imageFile.path));
+    return await firebaseStorageRef.getDownloadURL();
+  }
+
   Future<void> _saveMovie() async {
     try {
+      String imagePath = await uploadImageToFirebase(_image!);
+      String movieId = generateRandomId();
       await FirebaseFirestore.instance.collection('movies').add({
+        'id_movie': movieId,
         'date': _dateController.text,
         'price': _priceController.text,
         'genre': _selectedGenre,
         'studio': _selectedStudio,
         'movie_name': _movieNameController.text,
         'movie_description': _movieDescriptionController.text,
-        'cover_movie':
-            'KKN.png', // Update this based on your image upload logic
       });
+
+      // Simpan juga data film di koleksi 'movies' milik pengguna
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc('userID')
+          .collection('movies')
+          .doc(movieId)
+          .set({
+        'id_movies': movieId,
+        'date': _dateController.text,
+        'price': _priceController.text,
+        'genre': _selectedGenre,
+        'studio': _selectedStudio,
+        'movie_name': _movieNameController.text,
+        'movie_description': _movieDescriptionController.text,
+        'cover_movie': imagePath,
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Movie saved successfully!')),
       );
@@ -52,6 +106,21 @@ class _AddMoviePageState extends State<AddMoviePage> {
         SnackBar(content: Text('Failed to save movie: $e')),
       );
     }
+  }
+
+  void _resetForm() {
+    setState(() {
+      _dateController.clear();
+      _ticketController.clear();
+      _priceController.clear();
+      _movieNameController.clear();
+      _movieDescriptionController.clear();
+      _synopsisController.clear();
+      _selectedStudio = '1';
+      _selectedGenre = 'Horor';
+      _selectedTime = '13:30';
+      _image = null;
+    });
   }
 
   @override
@@ -63,7 +132,10 @@ class _AddMoviePageState extends State<AddMoviePage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MovieScreen()),
+          ),
         ),
         title: Text('Add Movie', style: TextStyle(color: Colors.white)),
       ),
@@ -177,6 +249,28 @@ class _AddMoviePageState extends State<AddMoviePage> {
     }
   }
 
+  Future<String> uploadImageToFirebaseStorage(XFile imageFile) async {
+    if (kIsWeb) {
+      // Handle web upload
+      final fileName = path.basename(imageFile.path);
+      firebase_storage.Reference firebaseStorageRef = firebase_storage
+          .FirebaseStorage.instance
+          .ref()
+          .child('assets/images/$fileName');
+      await firebaseStorageRef.putData(await imageFile.readAsBytes());
+      return await firebaseStorageRef.getDownloadURL();
+    } else {
+      // Handle mobile upload
+      final fileName = path.basename(imageFile.path);
+      firebase_storage.Reference firebaseStorageRef = firebase_storage
+          .FirebaseStorage.instance
+          .ref()
+          .child('assets/images/$fileName');
+      await firebaseStorageRef.putFile(File(imageFile.path));
+      return await firebaseStorageRef.getDownloadURL();
+    }
+  }
+
   Widget _buildStudioDropdown() {
     return DropdownButtonFormField<String>(
       value: _selectedStudio,
@@ -234,9 +328,7 @@ class _AddMoviePageState extends State<AddMoviePage> {
 
   Widget _buildImageUploadField() {
     return GestureDetector(
-      onTap: () {
-        // Implement image upload functionality
-      },
+      onTap: _pickImage,
       child: Container(
         color: Colors.black26,
         height: 50,
@@ -338,9 +430,7 @@ class _AddMoviePageState extends State<AddMoviePage> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         ElevatedButton(
-          onPressed: () {
-            // Implement delete functionality
-          },
+          onPressed: _resetForm,
           style: ElevatedButton.styleFrom(primary: Color(0xFFA1F7FF)),
           child: Text('Reset'),
         ),
